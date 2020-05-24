@@ -1,0 +1,14 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}This is an example page{% endblock %}
+
+{% block navbar %}
+    {% include 'navber.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+    {% block app_content %}
+
+    {% endblock %}
+    </div>
+{% endblock %}

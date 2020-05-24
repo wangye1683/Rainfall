@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Heatmaps</title>
+    <style>
+
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 85%;
+        position: sticky;
+        /*left:100px;*/
+        top: 30px;
+
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      #floating-panel {
+          background-color: #fff;
+          border: 1px solid #999;
+          left: 0%;
+          padding: 5px;
+          position: absolute;
+          top: 55px;
+          z-index: 5;
+      }
+      #timeshow {
+          position:absolute;
+          top: 60px;
+          left: 35%;
+          z-index:5;
+          background-color: #fff;
+          border: 1px solid #999;
+          padding: 5px;
+
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div id="floating-panel">
+      <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+      <button onclick="changeGradient()">Change gradient</button>
+      <button onclick="changeRadius()">Change radius</button>
+      <button onclick="changeOpacity()">Change opacity</button>
+    </div>
+
+
+
+    <div id="map" ></div>
+
+    <form action="/index" method="POST">
+        <div id = timeshow>
+        <input type="date" id="time" name="time" min="2014-04-01" max="2020-5-10" >
+        <input type="submit" value="Submit">   {{ time }}
+        </div>
+    </form>
+    <script>
+
+      // This example requires the Visualization library. Include the libraries=visualization
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+
+      var map, heatmap;
+
+      function initMap() {
+      var locationRio = {lat: -38.283, lng: 144.4784};
+      map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 6,
+          center: locationRio,
+          gestureHandling: 'cooperative',
+          zoomControl: true,
+          mapTypeId: google.maps.MapTypeId.SATELLITE
+        });
+      heatmap = new google.maps.visualization.HeatmapLayer({
+          data: getPoints(),
+          map: map
+        });
+      }
+
+      function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+
+      function changeGradient() {
+        gradient = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient );
+      }
+
+      function changeRadius() {
+        heatmap.set('radius', heatmap.get('radius') ? null : 20);
+      }
+
+      function changeOpacity() {
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+      }
+
+     function htmlParse(x) {
+      var c = document.createElement("div");
+      c.innerHTML = x;
+      return c.innerText;}
+
+     var dataListAll =  '{{dataListAll}}';
+     var decoded = htmlParse(dataListAll);
+     var arr = JSON.parse(decoded);
+
+     function getPoints() {
+
+         var array = [];
+         for (var i = 0; i < arr.length; i++) {
+             var lat = arr[i][1]
+             var lng = arr[i][2]
+             var weight = arr[i][3]
+             array.push({location: new google.maps.LatLng(lat, lng), weight: weight},)
+
+         }
+         return array}
+
+    </script>
+
+
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCL17CtW_yfRU4NG3yVxNQQaBBoraQt_a4&libraries=visualization&callback=initMap">
+    </script>
+  </body>
+</html>
+
